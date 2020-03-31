@@ -17,11 +17,31 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+  implementation("org.hibernate:hibernate-java8")
+
+  runtime("com.h2database:h2:1.4.200")
+
+/*
+        <!-- querydsl -->
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        */
+
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
+
+  testImplementation("com.google.truth:truth:1.0.1")
+
 }
 
 tasks.withType<Test> {
