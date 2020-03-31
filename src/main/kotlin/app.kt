@@ -136,7 +136,7 @@ interface PostQueryRepository {
 }
 
 @Component
-class PostQueryRepositoryImpl : PostQueryRepository/*, QuerydslRepositorySupport(Post::class.java)*/ {
+class PostQueryRepositoryImpl : PostQueryRepository, QuerydslRepositorySupport(Post::class.java) {
         override fun listPostByUserId(userId: Int): List<Post> {
                 return listOf() //from<Post>(QPost.post).fetch()
                 /*
