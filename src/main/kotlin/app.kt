@@ -4,14 +4,16 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.stereotype.Component
 import java.sql.Timestamp
 import java.util.*
 import javax.persistence.*
 
 
 @SpringBootApplication
-open class App
+class App
 
 fun main() {
     runApplication<App>()
@@ -126,7 +128,26 @@ interface UserRepository : PagingAndSortingRepository<User, Int> {
     fun findByLoginHandle(loginHandle: String): Optional<User>
 }
 
-interface PostRepository : PagingAndSortingRepository<Post, Int> /* TODO QuerydslPredicateExecutor<Post> */
+interface PostRepository : PagingAndSortingRepository<Post, Int>, PostQueryRepository
+
+interface PostQueryRepository {
+        /** 특정 User의 Posts? (QueryDSL 이용 + 인터페이스 만들어서 붙이기.) */
+        fun listPostByUserId(userId: Int): List<Post>
+}
+
+@Component
+class PostQueryRepositoryImpl : PostQueryRepository/*, QuerydslRepositorySupport(Post::class.java)*/ {
+        override fun listPostByUserId(userId: Int): List<Post> {
+                return listOf() //from<Post>(QPost.post).fetch()
+                /*
+                from(order)
+                        .where(order.userId.eq(userId))
+                        .fetch()
+                 */
+        }
+
+}
+
 
 interface CommentRepository : PagingAndSortingRepository<Comment, Int>
 

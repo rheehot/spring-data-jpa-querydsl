@@ -9,7 +9,7 @@ import org.springframework.test.context.jdbc.Sql
 
 @Sql("classpath:fixture/db/users+posts+comments.sql")
 @MySpringDataJpaTest
-open class UserAndPostRepositoryTest(
+class UserAndPostRepositoryTest(
         @Autowired
         val userRepository: UserRepository,
 
@@ -18,13 +18,13 @@ open class UserAndPostRepositoryTest(
 ) {
 
     @Test
-    open fun contextLoaded() {
+    fun contextLoaded() {
         assertThat(userRepository).isNotNull()
         assertThat(postRepository).isNotNull()
     }
 
     @Test
-    open fun findUserByLoginHandle() {
+    fun findUserByLoginHandle() {
         val poohOpt = userRepository.findByLoginHandle("pooh")
         assertThat(poohOpt.isPresent).isTrue()
         val pooh = poohOpt.get()
@@ -33,7 +33,7 @@ open class UserAndPostRepositoryTest(
     }
 
     @Test
-    open fun t01() {
+    fun t01() {
     }
 
 }
