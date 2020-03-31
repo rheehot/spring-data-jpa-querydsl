@@ -21,6 +21,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
   implementation("org.hibernate:hibernate-java8")
+  compile("org.flywaydb:flyway-core:6.3.2")
 
   runtime("com.h2database:h2:1.4.200")
 

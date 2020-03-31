@@ -4,7 +4,6 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.data.repository.PagingAndSortingRepository
 import java.sql.Timestamp
 import java.util.*
@@ -127,7 +126,7 @@ interface UserRepository : PagingAndSortingRepository<User, Int> {
     fun findByLoginHandle(loginHandle: String): Optional<User>
 }
 
-interface PostRepository : PagingAndSortingRepository<Post, Int>, QuerydslPredicateExecutor<Post>
+interface PostRepository : PagingAndSortingRepository<Post, Int> /* TODO QuerydslPredicateExecutor<Post> */
 
 interface CommentRepository : PagingAndSortingRepository<Comment, Int>
 
