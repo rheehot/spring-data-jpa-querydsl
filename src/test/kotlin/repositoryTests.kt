@@ -48,4 +48,11 @@ class UserAndPostRepositoryTest(
         assertThat(page.totalElements).isEqualTo(2)
     }
 
+    @DisplayName("흡연 작성자의 포스팅들")
+    @Test
+    fun t03() {
+        val l = postRepository.listPostBySmoker(true)
+        assertThat(l).hasSize(1)
+        assertThat(l[0].user!!.loginHandle).isEqualTo("CSM")
+    }
 }

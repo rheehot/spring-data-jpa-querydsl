@@ -1,5 +1,7 @@
 package jhyun.springDataJpaQueryDsl
 
+import jhyun.springDataJpaQueryDsl.QPost.post
+import jhyun.springDataJpaQueryDsl.QUser.user
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -33,6 +35,9 @@ data class User(
 
         @Column(name = "login_handle", nullable = false)
         val loginHandle: String? = null,
+
+        @Column(name = "smoker", nullable = false)
+        val smoker: Boolean? = null,
 
         @CreationTimestamp
         @Column(name = "created_at", nullable = false)
@@ -120,29 +125,35 @@ interface PostQueryRepository {
     fun listPostByUserId(userId: Int): List<Post>
 
     fun pagePostByUserId(userId: Int, pageable: Pageable): Page<Post>
+
+    fun listPostBySmoker(smoker: Boolean): List<Post>
 }
 
 class PostQueryRepositoryImpl : PostQueryRepository, QuerydslRepositorySupport(Post::class.java) {
     override fun listPostByUserId(userId: Int): List<Post> {
-        return from(QPost.post)
-                .where(QPost.post.userId.eq(userId))
+        return from(post)
+                .where(post.userId.eq(userId))
                 .fetch()
     }
 
     override fun pagePostByUserId(userId: Int, pageable: Pageable): Page<Post> {
-        val q = from(QPost.post).where(QPost.post.userId.eq(userId))
+        val q = from(post).where(post.userId.eq(userId))
         val total = q.fetchCount()
         var pageQ = q
                 .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong())
         //
-        QPost.post
-        pageQ.orderBy(QPost.post.id.desc())
+        pageQ.orderBy(post.id.desc())
         //
         return PageImpl(pageQ.fetchResults().results, pageable, total)
     }
 
-    // TODO Inner-JOIN + 조인 대상에 WHERE 조건.
+    override fun listPostBySmoker(smoker: Boolean): List<Post> {
+        return from(post)
+                .join(user).on(post.userId.eq(user.id), user.smoker.eq(smoker))
+                .fetch()
+    }
+
 }
 
 
