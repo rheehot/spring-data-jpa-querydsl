@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.data.repository.PagingAndSortingRepository
 import java.sql.Timestamp
+import java.util.*
 import javax.persistence.*
 
 
@@ -35,7 +36,24 @@ data class User(
 
         @UpdateTimestamp
         @Column(name = "updated_at", nullable = false)
-        var updatedAt: Timestamp? = null
+        var updatedAt: Timestamp? = null,
+
+        @OrderBy("id DESC")
+        @JoinColumn(name = "user_id",
+                insertable = false, updatable = false)
+        @OneToMany(targetEntity = Post::class,
+                fetch = FetchType.LAZY,
+                cascade = [])
+        var posts: List<Post>? = null,
+
+        @OrderBy("id DESC")
+        @JoinColumn(name = "user_id",
+                insertable = false, updatable = false)
+        @OneToMany(targetEntity = Comment::class,
+                fetch = FetchType.LAZY,
+                cascade = [])
+        var comments: List<Comment>? = null
+
 )
 
 @Table(name = "posts")
@@ -104,13 +122,11 @@ data class Comment(
 
 /* DB Repositories -------------------------------------------- */
 
-interface UserRepository : PagingAndSortingRepository<User, Int>
+interface UserRepository : PagingAndSortingRepository<User, Int> {
+    fun findByLoginHandle(loginHandle: String): Optional<User>
+}
 
 interface PostRepository : PagingAndSortingRepository<Post, Int>
 
 interface CommentRepository : PagingAndSortingRepository<Comment, Int>
-
-// TODO: 특정 User의 Posts? (QueryDSL 이용 + PostQueryDslRepository 인터페이스 만들어서 붙이기.)
-
-// TODO: @Sql + Jupiter test (Repository) : User, Post, Comment 모두 fixtures 입력. JoinColumn 동작 확인.
 
