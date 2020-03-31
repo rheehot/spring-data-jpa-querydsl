@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.data.repository.PagingAndSortingRepository
-import org.springframework.stereotype.Component
 import java.sql.Timestamp
 import java.util.*
 import javax.persistence.*
@@ -38,24 +37,7 @@ data class User(
 
         @UpdateTimestamp
         @Column(name = "updated_at", nullable = false)
-        var updatedAt: Timestamp? = null,
-
-        @OrderBy("id DESC")
-        @JoinColumn(name = "user_id",
-                insertable = false, updatable = false)
-        @OneToMany(targetEntity = Post::class,
-                fetch = FetchType.LAZY,
-                cascade = [])
-        var posts: List<Post>? = null,
-
-        @OrderBy("id DESC")
-        @JoinColumn(name = "user_id",
-                insertable = false, updatable = false)
-        @OneToMany(targetEntity = Comment::class,
-                fetch = FetchType.LAZY,
-                cascade = [])
-        var comments: List<Comment>? = null
-
+        var updatedAt: Timestamp? = null
 )
 
 @Table(name = "posts")
@@ -131,20 +113,16 @@ interface UserRepository : PagingAndSortingRepository<User, Int> {
 interface PostRepository : PagingAndSortingRepository<Post, Int>, PostQueryRepository
 
 interface PostQueryRepository {
-        /** 특정 User의 Posts? (QueryDSL 이용 + 인터페이스 만들어서 붙이기.) */
-        fun listPostByUserId(userId: Int): List<Post>
+    /** 특정 User의 Posts? (QueryDSL 이용 + 인터페이스 만들어서 붙이기.) */
+    fun listPostByUserId(userId: Int): List<Post>
 }
 
-@Component
 class PostQueryRepositoryImpl : PostQueryRepository, QuerydslRepositorySupport(Post::class.java) {
-        override fun listPostByUserId(userId: Int): List<Post> {
-                return listOf() //from<Post>(QPost.post).fetch()
-                /*
-                from(order)
-                        .where(order.userId.eq(userId))
-                        .fetch()
-                 */
-        }
+    override fun listPostByUserId(userId: Int): List<Post> {
+        return from(QPost.post)
+                .where(QPost.post.userId.eq(userId))
+                .fetch()
+    }
 
 }
 
