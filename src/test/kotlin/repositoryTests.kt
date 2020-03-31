@@ -32,5 +32,8 @@ open class UserAndPostRepositoryTest(
         assertThat(pooh.comments).hasSize(1)
     }
 
+    @Test
+    open fun t01() {
+    }
 
 }
