@@ -4,6 +4,9 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.data.repository.PagingAndSortingRepository
 import java.sql.Timestamp
@@ -115,6 +118,8 @@ interface PostRepository : PagingAndSortingRepository<Post, Int>, PostQueryRepos
 interface PostQueryRepository {
     /** 특정 User의 Posts? (QueryDSL 이용 + 인터페이스 만들어서 붙이기.) */
     fun listPostByUserId(userId: Int): List<Post>
+
+    fun pagePostByUserId(userId: Int, pageable: Pageable): Page<Post>
 }
 
 class PostQueryRepositoryImpl : PostQueryRepository, QuerydslRepositorySupport(Post::class.java) {
@@ -124,6 +129,20 @@ class PostQueryRepositoryImpl : PostQueryRepository, QuerydslRepositorySupport(P
                 .fetch()
     }
 
+    override fun pagePostByUserId(userId: Int, pageable: Pageable): Page<Post> {
+        val q = from(QPost.post).where(QPost.post.userId.eq(userId))
+        val total = q.fetchCount()
+        var pageQ = q
+                .offset(pageable.offset)
+                .limit(pageable.pageSize.toLong())
+        //
+        QPost.post
+        pageQ.orderBy(QPost.post.id.desc())
+        //
+        return PageImpl(pageQ.fetchResults().results, pageable, total)
+    }
+
+    // TODO Inner-JOIN + 조인 대상에 WHERE 조건.
 }
 
 

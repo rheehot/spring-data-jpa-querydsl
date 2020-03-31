@@ -4,6 +4,8 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.test.context.jdbc.Sql
 
 
@@ -34,6 +36,16 @@ class UserAndPostRepositoryTest(
     fun t01() {
         val l = postRepository.listPostByUserId(1)
         assertThat(l).hasSize(2)
+        assertThat(l[0].user).isNotNull()
+    }
+
+    @DisplayName("Pageable, Sorting")
+    @Test
+    fun t02() {
+        val page = postRepository.pagePostByUserId(1,
+                PageRequest.of(0, Int.MAX_VALUE,
+                        Sort.by(Sort.Order.desc("title"))))
+        assertThat(page.totalElements).isEqualTo(2)
     }
 
 }
